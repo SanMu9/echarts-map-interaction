@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>echarts Map打点获取坐标位置</title>
+    <link rel="icon" href="../../../public/images/logo/echarts-logo.png" type="image/x-icon">
+    <style>
+        body{
+            width: 100%;
+            height: 100%;
+        }
+        .container{
+            width: 480px;
+            height: 270px;
+            position: absolute;
+            left: 20px;
+            top: 200px;
+            outline: 1px #000 solid;
+            /* background-color: aqua */
+        }
+        .displayMap{
+            width: 960px;
+            height: 540px;
+            position: absolute;
+            outline: 1px #000 solid;
+            top: 200px;
+            left: 600px;
+        }
+        .output{
+            color:#000
+        }
+        /* .ensure,.back{
+            width:60px;
+            height: 30px;
+            background-color: aliceblue
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container"></div>
+    <div class="displayMap" id="displayMap"></div>
+    <div class="output">
+        <!-- X:<input class="x" type="text"><br>
+        Y:<input class="y" type="text"><br> -->
+        经度:<input class="lng" type="text"><br>
+        纬度:<input class="lat" type="text"><br>
+        name:<input class="name" type="text">
+    </div>
+    <button class="ensure" onclick="ensure()">确认</button>
+    <button class="back" onclick="back()">撤销</button>
+    <button class="empty" onclick="empty()">清空</button>
+
+    <script src="../../../public/js/jquery.min.js"></script>
+    <script src="../../../public/js/echarts-4.1.0.js"></script>
+    <script>
+        var dom = document.getElementById('container'),
+            dom2 = document.getElementById('displayMap'),
+            mychart = echarts.init(dom),
+            mychart2 = echarts.init(dom2),
+            jsonUrl = "../../../public/json/china.json",
+            option = {
+                geo: {
+                    map: "china",
+                    roam: true,
+                    emphasis: {
+                        label: {
+                            show: false
+                        }
+                    }
+                },
+                series: [{
+                    type: "effectScatter",
+                    // geoIndex:0,
+                    coordinateSystem: 'geo',
+                    symbol: "pin",
+                    symbolSize: 9,
+                    data: []
+                }]
+            },
+            option2 = {
+                "color": [
+                    "#1B6799",
+                    "#B9E14D"
+                ],
+                "title": {
+                    "textStyle": {
+                        "color": "#fff"
+                    }
+                },
+                "geo": {
+                    "show": true,
+                    "map": "china",
+                    "label": {
+                        "show": false
+                    },
+                    "roam": false,
+                    "itemStyle": {
+                        "areaColor": "#031525",
+                        "borderWidth": 0,
+                        "shadowColor": "rgba(48,147,203, 1)",
+                        "shadowBlur": 30
+                    }
+                },
+                "series": [
+                    {
+                    "type": "map",
+                    "map": "china",
+                    "geoIndex": 1,
+                    "aspectScale": 0.75,
+                    "showLegendSymbol": false,
+                    "label": {
+                        "show": false
+                    },
+                    "roam": false,
+                    "itemStyle": {
+                        "areaColor": "#031525",
+                        "borderColor": "#3B5077",
+                        "borderWidth": 0.2
+                    },
+                    "emphasis": {
+                        "itemStyle": {
+                            "areaColor": "#2B91B7"
+                        }
+                    }
+                }, {
+                    "type": "scatter",
+                    "coordinateSystem": "geo",
+                    "symbol": "circle",
+                    "data": [{
+                            "name": "北京",
+                            "value": [
+                                116.46,
+                                39.92,
+                                34
+                            ]
+                        },
+                        {
+                            "name": "上海",
+                            "value": [
+                                121.48,
+                                31.22,
+                                30
+                            ]
+                        },
+                        {
+                            "name": "天津",
+                            "value": [
+                                117.2,
+                                39.13,
+                                21
+                            ]
+                        },
+                        {
+                            "name": "拉萨",
+                            "value": [
+                                91.11,
+                                29.97,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "哈尔滨",
+                            "value": [
+                                126.63,
+                                45.75,
+                                24
+                            ]
+                        },
+                        {
+                            "name": "重庆",
+                            "value": [
+                                106.54,
+                                29.59,
+                                30
+                            ]
+                        },
+                        {
+                            "name": "长春",
+                            "value": [
+                                125.35,
+                                43.88,
+                                22
+                            ]
+                        },
+                        {
+                            "name": "沈阳",
+                            "value": [
+                                123.38,
+                                41.8,
+                                18
+                            ]
+                        },
+                        {
+                            "name": "呼和浩特",
+                            "value": [
+                                111.65,
+                                40.82,
+                                18
+                            ]
+                        },
+                        {
+                            "name": "石家庄",
+                            "value": [
+                                114.48,
+                                38.03,
+                                18
+                            ]
+                        },
+                        {
+                            "name": "武汉",
+                            "value": [
+                                114.31,
+                                30.52,
+                                24
+                            ]
+                        },
+                        {
+                            "name": "西安",
+                            "value": [
+                                108.95,
+                                34.27,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "乌鲁木齐",
+                            "value": [
+                                87.68,
+                                43.77,
+                                21
+                            ]
+                        },
+                        {
+                            "name": "兰州",
+                            "value": [
+                                103.73,
+                                36.03,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "西宁",
+                            "value": [
+                                101.74,
+                                36.56,
+                                19
+                            ]
+                        },
+                        {
+                            "name": "银川",
+                            "value": [
+                                106.27,
+                                38.47,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "郑州",
+                            "value": [
+                                113.65,
+                                34.76,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "济南",
+                            "value": [
+                                117,
+                                36.65,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "太原",
+                            "value": [
+                                112.53,
+                                37.87,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "合肥",
+                            "value": [
+                                117.27,
+                                31.86,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "长沙",
+                            "value": [
+                                113,
+                                28.21,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "南宁",
+                            "value": [
+                                108.33,
+                                22.84,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "成都",
+                            "value": [
+                                104.06,
+                                30.67,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "贵阳",
+                            "value": [
+                                106.71,
+                                26.57,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "昆明",
+                            "value": [
+                                102.73,
+                                25.04,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "杭州",
+                            "value": [
+                                120.19,
+                                30.26,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "南昌",
+                            "value": [
+                                115.89,
+                                28.68,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "广州",
+                            "value": [
+                                113.23,
+                                23.16,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "福州",
+                            "value": [
+                                119.3,
+                                26.08,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "海口",
+                            "value": [
+                                110.35,
+                                20.02,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "香港",
+                            "value": [
+                                114.1,
+                                22.2,
+                                20
+                            ]
+                        },
+                        {
+                            "name": "澳门",
+                            "value": [
+                                113.33,
+                                22.13,
+                                20
+                            ]
+                        }
+                    ],
+                    "itemStyle": {
+                        "color": "#5E9EA5",
+                        "shadowColor": "#5E9EA5",
+                        "shadowBlur": 10
+                    },
+                    "emphasis": {
+                        "label": {
+                            "formatter": "{b}:{@[2]}",
+                            "show": true
+                        }
+                    }
+                }]
+            };
+
+        $.getJSON(jsonUrl,
+            function (data, textStatus, jqXHR) {
+
+                echarts.registerMap("china", data);
+                let d = convertData(option2.series[1].data),
+                lastIndex = d.length-1,
+                lng = lastIndex>=0?d[lastIndex].value[0]:null,
+                lat = lastIndex>=0?d[lastIndex].value[1]:null,
+                name = lastIndex>=0?d[lastIndex].name:null;
+
+                option.series[0].data=d;
+                mychart.setOption(option);
+                mychart2.setOption(option2);
+                $('.lng').val(lng);
+                $('.lat').val(lat);
+                $('.name').val(name);
+            }
+        );
+        $('.container').dblclick(function (e) {
+            let x = e.offsetX,
+                y = e.offsetY;
+            // $('.x').val(x);
+            // $('.y').val(y);
+            let coords = mychart.convertFromPixel('geo', [x, y]),
+                lng = coords[0],
+                lat = coords[1];
+
+            $('.lng').val(lng);
+            $('.lat').val(lat);
+            $('.name').val(null);
+            option.series[0].data.push(
+                {
+                    name:'',
+                    value:[lng,lat]
+                }
+            );
+            mychart.dispose();
+            mychart = echarts.init(dom);
+            mychart.setOption(option)
+        });
+
+        function back() {
+            option.series[0].data.pop();
+
+            mychart.dispose();
+            mychart = echarts.init(dom);
+            mychart.setOption(option);
+            let data = option.series[0].data,
+                index = data.length - 1,
+                lng = index >= 0 ? data[index].value[0] : null,
+                lat = index >= 0 ? data[index].value[1] : null,
+                name = index >= 0 ? data[index].name : null;
+
+            $('.lng').val(lng);
+            $('.lat').val(lat);
+            $('.name').val(name);
+
+        }
+
+        function ensure() {
+            let lng = $('.lng').val(),
+                lat = $('.lat').val();
+                name = $('.name').val();
+            option.series[0].data.push(
+                {
+                    name:name,
+                    value:[lng,lat]
+                }
+            );
+            option2.series[1].data = option.series[0].data
+            mychart.dispose();
+            mychart = echarts.init(dom);
+            mychart.setOption(option);
+            
+            mychart2.dispose();
+            mychart2 = echarts.init(dom2);
+            mychart2.setOption(option2);
+        }
+
+        function empty() {
+            option.series[0].data = [];
+            $('.lng').val(null);
+            $('.lat').val(null);
+            $('.name').val(null);
+
+            mychart.dispose();
+            mychart = echarts.init(dom);
+            mychart.setOption(option)
+        }
+
+        function convertData(data){
+            var arr=[];
+            data.forEach(function(e){
+                arr.push(
+                    {
+                        name:e.name,
+                        value:[e.value[0],e.value[1]]
+                    }
+                    )
+            });
+            return arr;
+        }
+    </script>
+</body>
+
+</html>
